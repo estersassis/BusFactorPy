@@ -1,0 +1,55 @@
+# ===============================================
+# .gitignore para BusFactorPy (Python CLI Project)
+# ===============================================
+
+# 1. Ambientes Virtuais
+# --------------------
+# Exclui os diretórios mais comuns para ambientes virtuais
+.venv
+venv
+env
+/site
+
+# 2. Arquivos e Diretórios de Python em Geral
+# ------------------------------------------
+# Bytecode e caches
+__pycache__/
+*.pyc
+*.pyd
+*.so
+
+# Artefatos de Build e Empacotamento
+# Arquivos de distribuição, wheels, e caches de build
+/dist/
+/build/
+*.egg-info/
+.coverage
+.mypy_cache/
+.pytest_cache/
+
+# Logs e Dados Temporários
+# Se usarmos um diretório de logs
+*.log
+tmp/
+
+# 3. Saídas Geradas pelo BusFactorPy
+# ----------------------------------
+# Exclui os relatórios e visualizações geradas pela ferramenta
+# (Conforme mencionado no README: CSV/JSON reports e Bar charts)
+/reports/*.csv
+/reports/*.json
+/charts/*.png
+/charts/*.svg
+
+# 4. Configurações de IDEs (Mais Comuns)
+# --------------------------------------
+# Visual Studio Code
+.vscode/
+
+# PyCharm / IntelliJ
+.idea/
+
+# 5. Arquivos de Sistema Operacional
+# ----------------------------------
+.DS_Store # macOS
+Thumbs.db # Windows

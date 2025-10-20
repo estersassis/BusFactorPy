@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Metadados do Projeto
+name = "busfactorpy"
+version = "0.1.0"
+description = "A command-line tool to measure the Bus Factor of a Git repository."
+readme = "README.md"
+authors = [
+    {name = "Ester Sara Assis Silva"},
+    {name = "Filipe Pirola Santos"},
+    {name = "Matheus Grandinetti Barbosa Lima"},
+    {name = "Vitor Costa"},
+]
+
+# Classificação do projeto no PyPI
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Version Control",
+]
+
+# Dependências de Produção
+dependencies = [
+    "pydriller",         # Mineração de histórico
+    "gitpython",         # Operações Git
+    "typer[all]",        # Construção da CLI
+    "pandas",            # Manipulação de dados e exportação CSV/JSON
+    "matplotlib",        # Visualizações de dados
+    "rich",              # Output CLI aprimorado
+]
+
+[project.urls]
+Homepage = "https://github.com/estersassis/BusFactorPy" # URL de exemplo
+
+# Definição do Ponto de Entrada da CLI (Entry Point)
+# Assume que a função principal do Typer está em busfactorpy/cli.py, chamada 'app'
+[project.scripts]
+busfactorpy = "busfactorpy.cli:app"

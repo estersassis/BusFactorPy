@@ -1,0 +1,7 @@
+pydriller
+gitpython
+typer
+pandas
+matplotlib
+rich
+click
