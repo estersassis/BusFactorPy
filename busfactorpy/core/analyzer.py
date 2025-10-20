@@ -1,0 +1,1 @@
+# Aplica a classificação de risco (Critical, High, Medium, Low)

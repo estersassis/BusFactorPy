@@ -1,0 +1,1 @@
+# Lógica de contagem de autores e cálculo de Bus Factor

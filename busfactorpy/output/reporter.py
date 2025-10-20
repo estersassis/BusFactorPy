@@ -1,0 +1,1 @@
+# Gera CSV/JSON reports (Pandas) e resumo CLI (Rich)

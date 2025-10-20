@@ -1,0 +1,1 @@
+# Extração de histórico de commits (PyDriller, GitPython)

@@ -1,0 +1,1 @@
+# Ponto de entrada principal da aplicação (para `python -m busfactorpy`)
