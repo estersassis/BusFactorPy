@@ -1,8 +1,8 @@
 import typer
 from rich.console import Console
-from core.miner import GitMiner
-from core.calculator import BusFactorCalculator
-from output.reporter import ConsoleReporter
+from busfactorpy.core.miner import GitMiner
+from busfactorpy.core.calculator import BusFactorCalculator
+from busfactorpy.output.reporter import ConsoleReporter
 
 app = typer.Typer(
     name="busfactorpy",
