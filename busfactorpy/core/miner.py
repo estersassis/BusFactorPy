@@ -31,19 +31,26 @@ class GitMiner:
         """Iterates commits and extracts file changes and authors."""
         data = []
         for commit in Repository(self.repo_path).traverse_commits():
-            for modification in commit.modifications:
+            for modification in commit.modified_files:
                 data.append({
-                    'file': modification.new_path,
+                    'file': modification.new_path if modification.new_path else modification.old_path,
                     'author': commit.author.email,
-                    'lines_added': modification.insertions,
-                    'lines_deleted': modification.deletions,
+                    'lines_added': modification.added_lines,
+                    'lines_deleted': modification.deleted_lines,
                     'commit_hash': commit.hash
                 })
         
         return pd.DataFrame(data).dropna(subset=['file'])
     
     def mine_commit_history(self) -> pd.DataFrame:
-        df = pd.DataFrame([])
+        """The main method to run cloning and extraction."""
+        if not os.path.exists(self.repo_path):
+            self._clone_repo()
+
+        df = self._extract_data()
+
+        self.cleanup()
+        
         return df
 
     def cleanup(self):
