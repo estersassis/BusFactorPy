@@ -3,12 +3,21 @@ from rich.console import Console
 from busfactorpy.core.miner import GitMiner
 from busfactorpy.core.calculator import BusFactorCalculator
 from busfactorpy.output.reporter import ConsoleReporter
+from busfactorpy import __version__
 
 app = typer.Typer(
     name="busfactorpy",
     help="A command-line tool to measure the Bus Factor of a Git repository."
 )
 console = Console()
+
+@app.command()
+def version():
+    """
+    Exibe a versão instalada do BusFactorPy.
+    """
+    console.print(f"BusFactorPy Versão: [bold green]{__version__}[/bold green]")
+    typer.Exit()
 
 @app.command()
 def analyze(
