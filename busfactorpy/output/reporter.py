@@ -40,6 +40,7 @@ class ConsoleReporter:
         table.add_column("Risco", justify="center")
         table.add_column("Autores", justify="right")
         table.add_column("Share do Main Autor", justify="right")
+        table.add_column("Autor Principal", justify="left", style="bold white")
 
         for _, row in risky_files.iterrows():
             share_percent = f"{row['main_author_share']:.2%}"
@@ -50,6 +51,7 @@ class ConsoleReporter:
                 f"[{risk_style}]{row['risk_class']}[/{risk_style}]",
                 str(row['n_authors']),
                 share_percent,
+                row['main_author'],
             )
         
         self.console.print(table)

@@ -18,17 +18,24 @@ class BusFactorCalculator:
             total_churn=('lines_added', lambda x: x.sum() + self.data.loc[x.index, 'lines_deleted'].sum())
         ).reset_index()
 
+        idx_max = author_churn.loc[author_churn.groupby('file')['total_churn'].idxmax()]
+
+        main_author_data = idx_max[['file', 'author', 'total_churn']].rename(
+            columns={'author': 'main_author', 'total_churn': 'main_author_churn'}
+        )
+
         file_metrics = author_churn.groupby('file').agg(
             n_authors=('author', 'nunique'),
-            total_file_churn=('total_churn', 'sum'),
-            main_author_churn=('total_churn', 'max')
+            total_file_churn=('total_churn', 'sum')
         ).reset_index()
+
+        file_metrics = file_metrics.merge(main_author_data, on='file', how='left')
 
         file_metrics['main_author_share'] = (
             file_metrics['main_author_churn'] / file_metrics['total_file_churn']
         ).fillna(0)
         
-        return file_metrics
+        return file_metrics[['file', 'n_authors', 'total_file_churn', 'main_author_churn', 'main_author_share', 'main_author']]
     
     def calculate(self) -> pd.DataFrame:
         """
