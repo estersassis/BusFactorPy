@@ -38,87 +38,87 @@ Such files represent a **knowledge concentration risk**: if the main contributor
 - **[Matplotlib](https://matplotlib.org/)** → visualizations (bar plots for author dominance).  
 - **[Rich](https://github.com/Textualize/rich)** → improved CLI output with colors and tables.
 
-## Instalação
+## Installation
 
-Pré-requisitos:
+Prerequisites:
 - Python 3.x
 - Git
 
-Opção A — Instalar a partir do repositório (recomendado):
+Option A — Install from repository (recommended):
 ```bash
-# Clonar o projeto
+# Clone the project
 git clone https://github.com/estersassis/BusFactorPy.git
 cd BusFactorPy
 
-# (Opcional) criar ambiente virtual
+# (Optional) create virtual environment
 python -m venv .venv
 # Linux/macOS
 source .venv/bin/activate
 # Windows (PowerShell)
 .venv\Scripts\Activate.ps1
 
-# Instalação (modo desenvolvedor)
+# Installation (developer mode)
 pip install -e .
 
-# Alternativa: instalar dependências diretamente
+# Alternative: install dependencies directly
 pip install -r requirements.txt
 ```
 
-Opção B — Instalar direto via pip (a partir do Git):
+Option B — Install directly via pip (from Git):
 ```bash
 pip install "git+https://github.com/estersassis/BusFactorPy.git"
 ```
 
-## Execução (CLI)
+## Usage (CLI)
 
-Exibir ajuda geral:
+Display general help:
 ```bash
 busfactorpy --help
 ```
 
-Exibir versão:
+Display version:
 ```bash
 busfactorpy version
 ```
 
-Analisar um repositório local com resumo no terminal:
+Analyze a local repository with terminal summary:
 ```bash
 busfactorpy analyze . --format summary --top-n 10
 ```
 
-Analisar um repositório remoto (GitHub URL) e exportar JSON:
+Analyze a remote repository (GitHub URL) and export JSON:
 ```bash
 busfactorpy analyze https://github.com/owner/repo -f json
 ```
 
-Exportar CSV:
+Export CSV:
 ```bash
 busfactorpy analyze . -f csv
 ```
 
-Parâmetros principais:
-- `repository` (posicional): caminho local ou URL do repositório Git a analisar.
-- `--format, -f`: `summary` (padrão), `csv` ou `json`.
-- `--top-n, -n`: quantidade de arquivos mais arriscados no relatório/visualização (padrão: 10).
+Main parameters:
+- `repository` (positional): local path or URL of the Git repository to analyze.
+- `--format, -f`: `summary` (default), `csv` or `json`.
+- `--top-n, -n`: number of riskiest files in the report/visualization (default: 10).
 
-## Saídas e artefatos gerados
+## Outputs and Generated Artifacts
 
-- Relatórios:
-  - `reports/busfactorpy_report.csv` (quando `-f csv`)
-  - `reports/busfactorpy_report.json` (quando `-f json`)
-- Visualização:
-  - `charts/top_risky_files.png` (gráfico de barras com os Top N arquivos por dominância do autor)
-- Resumo no terminal quando `--format summary`
+- Reports:
+  - `reports/busfactorpy_report.csv` (when `-f csv`)
+  - `reports/busfactorpy_report.json` (when `-f json`)
+- Visualization:
+  - `charts/top_risky_files.png` (bar chart with Top N files by author dominance)
+- Terminal summary when `--format summary`
 
-## Desenvolvimento local
+## Local Development
 
-Rodar a partir do código (sem instalar como pacote):
+Run from source code (without installing as package):
 ```bash
-# No diretório do projeto
+# In the project directory
 python -m busfactorpy.cli analyze . --format summary -n 10
 ```
 
-Atualizar dependências:
+Update dependencies:
 ```bash
 pip install -r requirements.txt
 ```
