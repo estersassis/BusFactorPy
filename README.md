@@ -37,3 +37,88 @@ Such files represent a **knowledge concentration risk**: if the main contributor
 - **[Pandas](https://pandas.pydata.org/)** → data manipulation, aggregation, and CSV/JSON export.  
 - **[Matplotlib](https://matplotlib.org/)** → visualizations (bar plots for author dominance).  
 - **[Rich](https://github.com/Textualize/rich)** → improved CLI output with colors and tables.
+
+## Instalação
+
+Pré-requisitos:
+- Python 3.x
+- Git
+
+Opção A — Instalar a partir do repositório (recomendado):
+```bash
+# Clonar o projeto
+git clone https://github.com/estersassis/BusFactorPy.git
+cd BusFactorPy
+
+# (Opcional) criar ambiente virtual
+python -m venv .venv
+# Linux/macOS
+source .venv/bin/activate
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# Instalação (modo desenvolvedor)
+pip install -e .
+
+# Alternativa: instalar dependências diretamente
+pip install -r requirements.txt
+```
+
+Opção B — Instalar direto via pip (a partir do Git):
+```bash
+pip install "git+https://github.com/estersassis/BusFactorPy.git"
+```
+
+## Execução (CLI)
+
+Exibir ajuda geral:
+```bash
+busfactorpy --help
+```
+
+Exibir versão:
+```bash
+busfactorpy version
+```
+
+Analisar um repositório local com resumo no terminal:
+```bash
+busfactorpy analyze . --format summary --top-n 10
+```
+
+Analisar um repositório remoto (GitHub URL) e exportar JSON:
+```bash
+busfactorpy analyze https://github.com/owner/repo -f json
+```
+
+Exportar CSV:
+```bash
+busfactorpy analyze . -f csv
+```
+
+Parâmetros principais:
+- `repository` (posicional): caminho local ou URL do repositório Git a analisar.
+- `--format, -f`: `summary` (padrão), `csv` ou `json`.
+- `--top-n, -n`: quantidade de arquivos mais arriscados no relatório/visualização (padrão: 10).
+
+## Saídas e artefatos gerados
+
+- Relatórios:
+  - `reports/busfactorpy_report.csv` (quando `-f csv`)
+  - `reports/busfactorpy_report.json` (quando `-f json`)
+- Visualização:
+  - `charts/top_risky_files.png` (gráfico de barras com os Top N arquivos por dominância do autor)
+- Resumo no terminal quando `--format summary`
+
+## Desenvolvimento local
+
+Rodar a partir do código (sem instalar como pacote):
+```bash
+# No diretório do projeto
+python -m busfactorpy.cli analyze . --format summary -n 10
+```
+
+Atualizar dependências:
+```bash
+pip install -r requirements.txt
+```
