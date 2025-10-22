@@ -11,7 +11,7 @@ class ConsoleReporter:
     def __init__(self, results_df: pd.DataFrame):
         self.results = results_df
         self.console = Console()
-        self.output_dir = "busfactorpy_output"
+        self.output_dir = "reports"
     
     def _get_risk_style(self, risk_class: str) -> str:
         """Maps risk classes to Rich console styles."""

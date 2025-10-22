@@ -3,6 +3,7 @@ from rich.console import Console
 from busfactorpy.core.miner import GitMiner
 from busfactorpy.core.calculator import BusFactorCalculator
 from busfactorpy.output.reporter import ConsoleReporter
+from busfactorpy.output.visualizer import BusFactorVisualizer
 from busfactorpy import __version__
 
 app = typer.Typer(
@@ -56,7 +57,8 @@ def analyze(
         elif output_format in ["csv", "json"]:
             reporter.export_report(format=output_format)
         
-        # visualizer.generate_chart(bus_factor_results)
+        visualizer = BusFactorVisualizer()
+        visualizer.generate_top_n_bar_chart(results_df=bus_factor_results, n_top=n_top)
     else:
         console.print("[yellow]No relevant commit data found. Analysis aborted.[/yellow]")
 

@@ -7,7 +7,7 @@ class BusFactorVisualizer:
     Generates data visualizations (bar charts) using Matplotlib.
     """
     def __init__(self):
-        self.output_dir = "busfactorpy_output"
+        self.output_dir = "charts"
         os.makedirs(self.output_dir, exist_ok=True)
 
     def generate_top_n_bar_chart(self, results_df: pd.DataFrame, n_top: int = 10, filename: str = "top_risky_files.png"):
