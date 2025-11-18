@@ -1,4 +1,5 @@
 import typer
+from typing import Optional
 from rich.console import Console
 from busfactorpy.core.miner import GitMiner
 from busfactorpy.core.calculator import BusFactorCalculator
@@ -49,6 +50,24 @@ def analyze(
         "--threshold",
         "-t",
         help="Threshold for High Risk classification (0.0 to 1.0). Default is 0.8."
+    ),
+    group_by: str = typer.Option(
+        "file",
+        "--group-by",
+        "-g",
+        help="Group results by 'file' or 'directory'.",
+        case_sensitive=False
+    ),
+    depth: int = typer.Option(
+        1,
+        "--depth",
+        "-d",
+        help="Directory depth when grouping by directory (only valid with --group-by directory)."
+    ),
+    scope: Optional[str] = typer.Option(
+        None,
+        "--scope",
+        help="Limit analysis to a subdirectory (path relative to repo root). Example: src/ or src/utils"
     )
 ):
     """
@@ -74,6 +93,39 @@ def analyze(
     if not (0.0 < threshold <= 1.0):
          console.print(f"[bold red]Invalid threshold:[/bold red] {threshold}. Must be between 0.0 and 1.0")
          raise typer.Exit(code=1)
+
+    valid_group_by = {"file", "directory"}
+    group_by = group_by.lower()
+    if group_by not in valid_group_by:
+        console.print(
+            f"[bold red]Invalid group-by:[/bold red] {group_by}. "
+            f"Valid options: file, directory"
+        )
+        raise typer.Exit(code=1)
+
+    if group_by == "directory" and depth < 1:
+        console.print(
+            f"[bold red]Invalid depth:[/bold red] {depth}. Must be an integer >= 1 when grouping by directory."
+        )
+        raise typer.Exit(code=1)
+
+    normalized_scope = None
+    if scope:
+        # Normaliza separadores e remove barras finais/iniciais redundantes
+        normalized_scope = scope.strip().replace("\\", "/").strip("/")
+        if normalized_scope == "":
+            normalized_scope = None
+
+    # Mensagens informativas (ainda sem alterar lógica de cálculo)
+    if group_by == "directory":
+        console.print(f"[bold cyan]Grouping by:[/bold cyan] directory (depth={depth})")
+    else:
+        console.print(f"[bold cyan]Grouping by:[/bold cyan] file")
+
+    if normalized_scope:
+        console.print(f"[bold cyan]Scope:[/bold cyan] {normalized_scope}/")
+    else:
+        console.print(f"[bold cyan]Scope:[/bold cyan] repository root")
 
     # Mineração de Dados (Extraction)
     try:
