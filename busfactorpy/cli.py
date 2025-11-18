@@ -36,6 +36,19 @@ def analyze(
         ".busfactorignore",
         "--ignore-file",
         help="Path to the exclusion file (default: .busfactorignore)."
+    ),
+    metric: str = typer.Option(
+        "churn",
+        "--metric",
+        "-m",
+        help="Metric: commit-number, churn, entropy, hhi, ownership.",
+        case_sensitive=False
+    ),
+    threshold: float = typer.Option(
+        0.8,
+        "--threshold",
+        "-t",
+        help="Threshold for High Risk classification (0.0 to 1.0). Default is 0.8."
     )
 ):
     """
@@ -50,6 +63,18 @@ def analyze(
         console.print(f"[bold red]ERROR loading ignore file:[/bold red] {e}")
         raise typer.Exit(code=1)
 
+    valid_metrics = {"churn", "entropy", "hhi", "ownership", "commit-number"}
+    if metric.lower() not in valid_metrics:
+        console.print(
+            f"[bold red]Invalid metric:[/bold red] {metric}. "
+            f"Valid options: {', '.join(valid_metrics)}"
+        )
+        raise typer.Exit(code=1)
+    
+    if not (0.0 < threshold <= 1.0):
+         console.print(f"[bold red]Invalid threshold:[/bold red] {threshold}. Must be between 0.0 and 1.0")
+         raise typer.Exit(code=1)
+
     # Mineração de Dados (Extraction)
     try:
         miner = GitMiner(repository, ignorer)
@@ -60,7 +85,12 @@ def analyze(
 
     # Cálculo do Bus Factor
     if not commit_data.empty:
-        calculator = BusFactorCalculator(commit_data)
+        # Passamos o threshold para o calculator
+        calculator = BusFactorCalculator(
+            commit_data, 
+            metric=metric.lower(), 
+            threshold=threshold
+        )
         bus_factor_results = calculator.calculate()
         
         reporter = ConsoleReporter(bus_factor_results)
