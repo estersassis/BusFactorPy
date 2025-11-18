@@ -21,7 +21,7 @@ class RiskAnalyzer:
         # Define Medium threshold as a proportion of the High threshold
         # Example: If threshold is 0.8, medium is approx 0.6 to 0.8
         # If threshold is 0.5, medium is approx 0.375 to 0.5
-        medium_threshold = threshold * 0.75
+        medium_threshold = round(threshold * 0.75, 4)
         
         if share >= threshold:
             return "High"

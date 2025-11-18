@@ -75,7 +75,7 @@ class BusFactorCalculator:
             p = churn / churn.sum()
             return -np.sum(p * np.log2(p))
 
-        entropy_df = author_churn.groupby('file').apply(
+        entropy_df = author_churn.groupby('file')[['author', 'total_churn']].apply(
             lambda g: pd.Series({
                 "entropy": shannon_entropy(g),
                 "n_authors": g['author'].nunique(),
@@ -112,7 +112,7 @@ class BusFactorCalculator:
             p = churn / churn.sum()
             return np.sum(p**2)
 
-        hhi_df = author_churn.groupby('file').apply(
+        hhi_df = author_churn.groupby('file')[['author', 'total_churn']].apply(
             lambda g: pd.Series({
                 "hhi": compute_hhi(g),
                 "n_authors": g['author'].nunique(),
