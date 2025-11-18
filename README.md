@@ -100,6 +100,8 @@ Main parameters:
 - `repository` (positional): local path or URL of the Git repository to analyze.
 - `--format, -f`: `summary` (default), `csv` or `json`.
 - `--top-n, -n`: number of riskiest files in the report/visualization (default: 10).
+- `metric, -m`: algorithm to calculate Bus Factor. Options: `churn` (default), `commit-number`, `entropy`, `hhi`, `ownership`.
+- `threshold, t`: threshold for high risk classification. Default is 0.8.
 
 ## Outputs and Generated Artifacts
 
