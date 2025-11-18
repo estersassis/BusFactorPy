@@ -129,12 +129,20 @@ def analyze(
 
     # Mineração de Dados (Extraction)
     try:
-        miner = GitMiner(repository, ignorer)
+        miner = GitMiner(repository, ignorer, normalized_scope)
         commit_data = miner.mine_commit_history()
     except Exception as e:
         console.print(f"[bold red]ERROR during mining:[/bold red] {e}")
         raise typer.Exit(code=1)
 
+    # Verifica se escopo esvaziou totalmente os dados
+    if normalized_scope and commit_data.empty:
+        console.print(
+            f"[bold yellow]No files found under scope:[/bold yellow] {normalized_scope}/. "
+            "Analysis aborted."
+        )
+        raise typer.Exit(code=0)
+    
     # Cálculo do Bus Factor
     if not commit_data.empty:
         # Passamos o threshold para o calculator
