@@ -4,15 +4,17 @@ import tempfile
 import pandas as pd
 from pydriller import Repository
 from git import Repo, GitCommandError
+from .ignore import BusFactorIgnore
 
 class GitMiner:
     """
     Handles repository cloning and commit history extraction using PyDriller.
     """
-    def __init__(self, path_to_repo: str):
+    def __init__(self, path_to_repo: str, ignorer: BusFactorIgnore):
         self.repo_path = path_to_repo
         self.temp_dir = None
         self.is_cloned = False
+        self.ignorer = ignorer
     
     def _clone_repo(self):
         """Clones a remote GitHub URL into a temporary directory."""
@@ -32,8 +34,13 @@ class GitMiner:
         data = []
         for commit in Repository(self.repo_path).traverse_commits():
             for modification in commit.modified_files:
+                file_path = modification.new_path if modification.new_path else modification.old_path
+                
+                if file_path and self.ignorer.is_ignored(file_path):
+                    continue
+                
                 data.append({
-                    'file': modification.new_path if modification.new_path else modification.old_path,
+                    'file': file_path,
                     'author': commit.author.email,
                     'lines_added': modification.added_lines,
                     'lines_deleted': modification.deleted_lines,
