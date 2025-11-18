@@ -6,3 +6,4 @@ matplotlib
 rich
 click
 pytest
+pathspec

@@ -2,6 +2,7 @@ import typer
 from rich.console import Console
 from busfactorpy.core.miner import GitMiner
 from busfactorpy.core.calculator import BusFactorCalculator
+from busfactorpy.core.ignore import BusFactorIgnore
 from busfactorpy.output.reporter import ConsoleReporter
 from busfactorpy.output.visualizer import BusFactorVisualizer
 from busfactorpy import __version__
@@ -31,15 +32,27 @@ def analyze(
     n_top: int = typer.Option(
         10, "--top-n", "-n", help="Number of top risky files to report."
     ),
+    ignore_file: str = typer.Option(
+        ".busfactorignore",
+        "--ignore-file",
+        help="Path to the exclusion file (default: .busfactorignore)."
+    )
 ):
     """
     Executes the Bus Factor analysis on a given Git repository.
     """
     console.print(f"[bold cyan]Analysing repository:[/bold cyan] {repository}")
+    
+    try:
+        ignorer = BusFactorIgnore(ignore_file)
+        console.print(f"[bold yellow]Excluding files based on:[/bold yellow] {ignore_file}")
+    except Exception as e:
+        console.print(f"[bold red]ERROR loading ignore file:[/bold red] {e}")
+        raise typer.Exit(code=1)
 
     # Mineração de Dados (Extraction)
     try:
-        miner = GitMiner(repository)
+        miner = GitMiner(repository, ignorer)
         commit_data = miner.mine_commit_history()
     except Exception as e:
         console.print(f"[bold red]ERROR during mining:[/bold red] {e}")
