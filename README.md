@@ -99,9 +99,13 @@ busfactorpy analyze . -f csv
 Main parameters:
 - `repository` (positional): local path or URL of the Git repository to analyze.
 - `--format, -f`: `summary` (default), `csv` or `json`.
-- `--top-n, -n`: number of riskiest files in the report/visualization (default: 10).
-- `metric, -m`: algorithm to calculate Bus Factor. Options: `churn` (default), `commit-number`, `entropy`, `hhi`, `ownership`.
-- `threshold, t`: threshold for high risk classification. Default is 0.8.
+- `--top-n, -n`: number of riskiest files/directories to display (default: 10).
+- `--metric, -m`: algorithm to calculate Bus Factor. Options: `churn` (default), `commit-number`, `entropy`, `hhi`, `ownership`.
+- `--threshold, -t`: threshold for High risk classification. Default is 0.8.
+- `--group-by, -g`: `file` (default) or `directory`. When `directory`, results are aggregated by directory.
+- `--depth, -d`: directory depth when `--group-by directory` (integer ≥ 1).
+- `--scope`: limit analysis to a subdirectory (path relative to repo root).
+- `--ignore-file`: path to an ignore file (gitignore-style) used to exclude files and directories from analysis (default: `.busfactorignore`).
 
 ## Outputs and Generated Artifacts
 
