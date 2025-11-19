@@ -9,13 +9,12 @@ def create_ignore_file(tmp_path: Path):
     Creates a temporary ignore file in the test directory
     and returns a configured instance of BusFactorIgnore.
     """
+
     def _creator(content: str, filename: str = ".busfactorignore"):
         file_path = tmp_path / filename
         file_path.write_text(content.strip() + "\n", encoding="utf-8")
-        return BusFactorIgnore(
-            ignore_file_path=str(file_path),
-            root_path=str(tmp_path)
-        )
+        return BusFactorIgnore(ignore_file_path=str(file_path), root_path=str(tmp_path))
+
     return _creator
 
 
@@ -103,8 +102,7 @@ def test_non_existent_ignore_file(tmp_path: Path):
 
     ignorer = BusFactorIgnore(
         ignore_file_path=str(tmp_path / "does_not_exist.ignore"),
-        root_path=str(tmp_path)
+        root_path=str(tmp_path),
     )
 
     assert not ignorer.is_ignored("anything/at/all.py")
-    
