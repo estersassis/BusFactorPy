@@ -1,4 +1,3 @@
-import pytest
 from busfactorpy.core.analyzer import RiskAnalyzer
 
 

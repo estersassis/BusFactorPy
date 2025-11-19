@@ -1,6 +1,5 @@
 import pytest
 import pandas as pd
-import numpy as np
 from busfactorpy.core.calculator import BusFactorCalculator
 
 @pytest.fixture

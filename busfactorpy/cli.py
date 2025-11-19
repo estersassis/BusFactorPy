@@ -120,12 +120,12 @@ def analyze(
     if group_by == "directory":
         console.print(f"[bold cyan]Grouping by:[/bold cyan] directory (depth={depth})")
     else:
-        console.print(f"[bold cyan]Grouping by:[/bold cyan] file")
+        console.print("[bold cyan]Grouping by:[/bold cyan] file")
 
     if normalized_scope:
         console.print(f"[bold cyan]Scope:[/bold cyan] {normalized_scope}/")
     else:
-        console.print(f"[bold cyan]Scope:[/bold cyan] repository root")
+        console.print("[bold cyan]Scope:[/bold cyan] repository root")
 
     # Mineração de Dados (Extraction)
     try:
