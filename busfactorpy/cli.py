@@ -149,7 +149,9 @@ def analyze(
         calculator = BusFactorCalculator(
             commit_data, 
             metric=metric.lower(), 
-            threshold=threshold
+            threshold=threshold,
+            group_by=group_by,
+            depth=depth 
         )
         bus_factor_results = calculator.calculate()
         

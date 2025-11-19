@@ -8,8 +8,14 @@ class BusFactorCalculator:
     Calculates Bus Factor metrics based on raw commit data (Pandas DataFrame).
     """
 
-    def __init__(self, commit_data: pd.DataFrame, metric: str = "churn", threshold: float = 0.8):
-        self.data = commit_data
+    def __init__(
+            self, 
+            commit_data: pd.DataFrame, 
+            metric: str = "churn", 
+            threshold: float = 0.8,
+            group_by: str = "file",
+            depth: int = 1
+        ):
         self.metric = metric.lower()
         self.threshold = threshold
         self.valid_metrics = {"churn", "entropy", "hhi", "ownership", "commit-number"}
@@ -20,6 +26,59 @@ class BusFactorCalculator:
                 f"Valid metrics: {', '.join(self.valid_metrics)}"
             )
     
+        group_by = (group_by or "file").lower()
+        if group_by not in {"file", "directory"}:
+            raise ValueError("group_by must be 'file' or 'directory'.")
+
+        if group_by == "directory":
+            if depth < 1:
+                raise ValueError("depth must be >= 1 when grouping by directory.")
+            self.data = self._apply_directory_grouping(commit_data, depth)
+        else:
+            self.data = commit_data
+    
+    def _dir_key_and_depth(self, path: str, depth: int) -> tuple[str, int]:
+        """
+        Convert a file path to a directory key with the given depth and return its depth.
+        Depth is the number of path segments in the directory key.
+        Examples:
+          - 'src/app/main.py' with depth=1 -> ('src', 1)
+          - 'src/app/main.py' with depth=2 -> ('src/app', 2)
+          - 'main.py' (repo root) -> ('.', 0)
+        """
+        if not isinstance(path, str):
+            return ".", 0
+        norm = path.replace("\\", "/").strip("/")
+        if not norm:
+            return ".", 0
+        parts = norm.split("/")
+        if len(parts) <= 1:
+            # file directly at repo root
+            return ".", 0
+        dirs = parts[:-1]
+        key = "/".join(dirs[:depth]).strip("/")
+        if not key:
+            return ".", 0
+        return key, len(key.split("/"))
+
+    def _apply_directory_grouping(self, df: pd.DataFrame, depth: int) -> pd.DataFrame:
+        """
+        Build directory key and filter rows to keep ONLY entries whose directory key
+        has exactly the requested depth.
+        """
+        tmp = df.copy()
+        keys_and_depths = tmp["file"].apply(lambda p: self._dir_key_and_depth(p, depth))
+        tmp["__dir_key__"] = keys_and_depths.apply(lambda t: t[0])
+        tmp["__dir_depth__"] = keys_and_depths.apply(lambda t: t[1])
+
+        # Keep ONLY the exact depth (exclude shallower groups like '.' or 'tests' when depth=2)
+        tmp = tmp[tmp["__dir_depth__"] == depth]
+
+        # Replace file by the directory key to reuse metric pipelines
+        tmp["file"] = tmp["__dir_key__"]
+        tmp = tmp.drop(columns=["__dir_key__", "__dir_depth__"])
+        return tmp
+
     # =============================================================
     # BASE EXTRACTION: author × file × churn
     # =============================================================
