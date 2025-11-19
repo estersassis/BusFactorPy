@@ -1,0 +1,74 @@
+# --- VCS / IDE / SO ---
+.git/
+.github/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# --- Python: build / env / caches ---
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# --- Front-end / bundlers ---
+node_modules/
+.next/
+dist/
+build/
+static/
+staticfiles/
+
+# --- Vendor / third-party / generated code ---
+vendor/
+third_party/
+external/
+**/*.generated.*
+**/*_generated.*
+**/gen/**
+
+# --- Binary/media assets ---
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.pdf
+*.docx
+*.xlsx
+*.zip
+*.tar
+*.tar.gz
+
+# --- Lockfiles ---
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+poetry.lock
+Pipfile.lock
+
+# --- Docs geradas ---
+docs/_build/
+site/
+
+# --- Configurações locais ---
+.env
+pyproject.toml
+requirements.txt
+.gitignore
+.README.md
+Dockerfile
+docker-compose.yml
