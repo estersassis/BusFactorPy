@@ -1,0 +1,14 @@
+[run]
+branch = True
+source = busfactorpy
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == "__main__":
+    raise NotImplementedError
+omit =
+    tests/*
+
+[html]
+directory = htmlcov

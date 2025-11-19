@@ -1,5 +1,7 @@
 # BusFactorPy
 
+[![CI Status](https://github.com/estersassis/BusFactorPy/actions/workflows/ci.yml/badge.svg)](https://github.com/estersassis/BusFactorPy/actions/workflows/ci.yml)
+
 ## Group Members
 
 - Ester Sara Assis Silva

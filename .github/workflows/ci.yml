@@ -8,59 +8,76 @@ permissions:
   contents: read
 
 jobs:
-  build-test-lint:
-    name: Test & Lint (${{ matrix.os }}, Python ${{ matrix.python-version }})
+  lint-and-test-matrix:
+    name: Lint & Tests (${{ matrix.os }} / Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.10', '3.12']
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install base dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          # Ensure dev tools (if not in requirements.txt)
-          pip install pytest pytest-cov ruff mypy
+          pip install ruff mypy pytest
 
-      # ---- Lint (Ruff) ----
-      - name: Ruff lint (code quality)
+      - name: Ruff lint
         run: ruff check .
 
-      - name: Ruff formatting check
+      - name: Ruff format check
         run: ruff format --check .
 
-      # ---- Type Checking ----
-      - name: MyPy type checking
+      - name: MyPy type check
         run: mypy busfactorpy
 
-      # ---- Tests + Coverage ----
+      - name: Pytest (no coverage here)
+        run: pytest -q
+
+  coverage:
+    name: Coverage (Ubuntu / Python 3.12)
+    runs-on: ubuntu-latest
+    needs: lint-and-test-matrix
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies + coverage tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov coverage
+
       - name: Run tests with coverage
         run: |
           pytest --cov=busfactorpy --cov-report=term-missing --cov-report=xml --cov-report=html
         env:
           PYTHONUNBUFFERED: "1"
 
-      - name: Enforce minimum coverage (80%)
+      - name: Enforce coverage >= 80%
         run: coverage report --fail-under=80
 
-      # ---- Upload Coverage Artifacts ----
-      - name: Upload coverage HTML
+      - name: Upload HTML coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-html-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: coverage-html
           path: htmlcov
           retention-days: 7
 
@@ -68,20 +85,20 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-xml-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: coverage-xml
           path: coverage.xml
           retention-days: 7
 
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
-    needs: build-test-lint
+    needs: [coverage]
     if: always()
     steps:
-      - name: Assert all matrix jobs succeeded
+      - name: Ensure previous jobs succeeded
         run: |
-          if [ "${{ needs.build-test-lint.result }}" != "success" ]; then
-            echo "One or more matrix builds failed."
+          if [ "${{ needs.coverage.result }}" != "success" ]; then
+            echo "Coverage job failed."
             exit 1
           fi
-          echo "All matrix builds succeeded."
+          echo "Quality gate passed."
