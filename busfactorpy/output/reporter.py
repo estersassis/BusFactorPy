@@ -63,7 +63,7 @@ class ConsoleReporter:
 
         self.console.print(table)
 
-    def export_report(self, format: Literal["csv", "json"]):
+    def export_report(self, format: str):
         """Exports the full report to CSV or JSON format."""
         os.makedirs(self.output_dir, exist_ok=True)
         filename = f"{self.output_dir}/busfactorpy_report.{format}"

@@ -26,6 +26,7 @@ __pycache__/
 .coverage
 .mypy_cache/
 .pytest_cache/
+.ruff_cache/
 
 # Logs e Dados Temporários
 # Se usarmos um diretório de logs
