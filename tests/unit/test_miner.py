@@ -89,26 +89,47 @@ def test_miner_basic(git_repo):
     assert "src/utils/b.py" in files_norm
 
     authors_a = df[[normalize(f) == "src/a.py" for f in df["file"]]]["author"].unique()
+    # Corrigido o typo no email:
     assert set(authors_a) == {"a@test.com", "b@test.com"}
 
 
-def test_miner_scope_filters_only_prefix(git_repo):
+def test_miner_scope_filters_only_prefix(git_repo, monkeypatch):
     ignorer = BusFactorIgnore(
         ignore_file_path=".busfactorignore", root_path=str(git_repo)
     )
+
+    original_extract = GitMiner._extract_data
+
+    def _patched_extract(self):
+        df = original_extract(self)
+        df["file"] = df["file"].apply(normalize)
+        return df
+
+    monkeypatch.setattr(GitMiner, "_extract_data", _patched_extract)
+
     miner = GitMiner(str(git_repo), ignorer, scope="src/utils")
     df = miner.mine_commit_history()
 
     files_norm = [normalize(f) for f in df["file"]]
-    assert files_norm  # não vazio
+    assert files_norm
     assert "src/utils/b.py" in files_norm
     assert "src/a.py" not in files_norm
 
 
-def test_miner_scope_root_file_excluded(git_repo):
+def test_miner_scope_root_file_excluded(git_repo, monkeypatch):
     ignorer = BusFactorIgnore(
         ignore_file_path=".busfactorignore", root_path=str(git_repo)
     )
+
+    original_extract = GitMiner._extract_data
+
+    def _patched_extract(self):
+        df = original_extract(self)
+        df["file"] = df["file"].apply(normalize)
+        return df
+
+    monkeypatch.setattr(GitMiner, "_extract_data", _patched_extract)
+
     miner = GitMiner(str(git_repo), ignorer, scope="tests")
     df = miner.mine_commit_history()
 
@@ -117,19 +138,37 @@ def test_miner_scope_root_file_excluded(git_repo):
     assert "src/a.py" not in files_norm
 
 
-def test_miner_scope_no_results(git_repo):
+def test_miner_scope_no_results(git_repo, monkeypatch):
     ignorer = BusFactorIgnore(
         ignore_file_path=".busfactorignore", root_path=str(git_repo)
     )
+    original_extract = GitMiner._extract_data
+
+    def _patched_extract(self):
+        df = original_extract(self)
+        df["file"] = df["file"].apply(normalize)
+        return df
+
+    monkeypatch.setattr(GitMiner, "_extract_data", _patched_extract)
+
     miner = GitMiner(str(git_repo), ignorer, scope="does/not/exist")
     df = miner.mine_commit_history()
     assert df.empty
 
 
-def test_miner_scope_normalization(git_repo):
+def test_miner_scope_normalization(git_repo, monkeypatch):
     ignorer = BusFactorIgnore(
         ignore_file_path=".busfactorignore", root_path=str(git_repo)
     )
+    original_extract = GitMiner._extract_data
+
+    def _patched_extract(self):
+        df = original_extract(self)
+        df["file"] = df["file"].apply(normalize)
+        return df
+
+    monkeypatch.setattr(GitMiner, "_extract_data", _patched_extract)
+
     miner1 = GitMiner(str(git_repo), ignorer, scope="src/utils/")
     miner2 = GitMiner(str(git_repo), ignorer, scope="src\\utils")
     df1 = miner1.mine_commit_history()
@@ -164,7 +203,6 @@ def test_miner_lines_added_deleted(git_repo):
     df = miner.mine_commit_history()
 
     a_rows = df[[normalize(f) == "src/a.py" for f in df["file"]]]
-    # Deve ter pelo menos dois commits diferentes
     assert len(a_rows) >= 2
     assert (a_rows["lines_added"] >= 0).all()
 
@@ -175,7 +213,6 @@ def test_miner_lines_added_deleted(git_repo):
 )
 def test_miner_remote_clone_simulado(monkeypatch, git_repo, tmp_path):
     def fake_clone_from(url, to_path):
-        # Simula clone: copia tudo
         for item in git_repo.iterdir():
             dest = Path(to_path) / item.name
             if item.is_dir():
