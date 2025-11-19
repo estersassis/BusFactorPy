@@ -1,11 +1,15 @@
 from pathlib import Path
 import pathspec
 
+
 class BusFactorIgnore:
     """
     Implements .gitignore compatible ignore functionality using pathspec.
     """
-    def __init__(self, ignore_file_path: str = ".busfactorignore", root_path: str = "."):
+
+    def __init__(
+        self, ignore_file_path: str = ".busfactorignore", root_path: str = "."
+    ):
         self.root_path = Path(root_path)
         self.spec = self._load_spec(ignore_file_path)
 
@@ -27,7 +31,6 @@ class BusFactorIgnore:
         Assumes file_path is the path relative to the repository root,
         provided by GitMiner.
         """
-        
+
         rel_path = Path(file_path).as_posix()
         return self.spec.match_file(rel_path)
-        
