@@ -7,3 +7,6 @@ rich
 click
 pytest
 pathspec
+pytest-cov
+ruff
+mypy

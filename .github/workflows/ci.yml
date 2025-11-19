@@ -1,41 +1,87 @@
-# Nome do workflow
-name: CI de Testes Python
+name: Python CI
 
-# Gatilhos
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
-  build-and-test:
-    
-    # Requisito 1: Executar em Ubuntu, MacOS e Windows
+  build-test-lint:
+    name: Test & Lint (${{ matrix.os }}, Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
-    
     strategy:
-      # 'fail-fast: false' garante que, se um job falhar (ex: Win + Py3.10), 
-      # os outros continuem rodando (ex: Ubuntu + Py3.12).
       fail-fast: false
-      
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        
-        # Requisito 2: Executar em pelo menos duas versões de Python
         python-version: ['3.10', '3.12']
 
     steps:
-      - name: 1. Fazer checkout do código
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 2. Configurar Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - name: 3. Instalar dependências
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          # Ensure dev tools (if not in requirements.txt)
+          pip install pytest pytest-cov ruff mypy
 
-      - name: 4. Rodar os testes (python -m pytest)
+      # ---- Lint (Ruff) ----
+      - name: Ruff lint (code quality)
+        run: ruff check .
+
+      - name: Ruff formatting check
+        run: ruff format --check .
+
+      # ---- Type Checking ----
+      - name: MyPy type checking
+        run: mypy busfactorpy
+
+      # ---- Tests + Coverage ----
+      - name: Run tests with coverage
         run: |
-          python -m pytest
+          pytest --cov=busfactorpy --cov-report=term-missing --cov-report=xml --cov-report=html
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      - name: Enforce minimum coverage (80%)
+        run: coverage report --fail-under=80
+
+      # ---- Upload Coverage Artifacts ----
+      - name: Upload coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: htmlcov
+          retention-days: 7
+
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: coverage.xml
+          retention-days: 7
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: build-test-lint
+    if: always()
+    steps:
+      - name: Assert all matrix jobs succeeded
+        run: |
+          if [ "${{ needs.build-test-lint.result }}" != "success" ]; then
+            echo "One or more matrix builds failed."
+            exit 1
+          fi
+          echo "All matrix builds succeeded."
