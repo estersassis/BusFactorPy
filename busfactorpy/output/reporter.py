@@ -2,7 +2,6 @@ import pandas as pd
 import os
 from rich.console import Console
 from rich.table import Table
-from typing import Literal
 
 
 class ConsoleReporter:
