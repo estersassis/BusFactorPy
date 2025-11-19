@@ -10,11 +10,17 @@ class GitMiner:
     """
     Handles repository cloning and commit history extraction using PyDriller.
     """
-    def __init__(self, path_to_repo: str, ignorer: BusFactorIgnore):
+    def __init__(self, path_to_repo: str, ignorer: BusFactorIgnore, scope: str | None = None):
         self.repo_path = path_to_repo
         self.temp_dir = None
         self.is_cloned = False
         self.ignorer = ignorer
+
+        if scope:
+            normalized = scope.strip().replace("\\", "/").strip("/")
+            self.scope = normalized if normalized else None
+        else:
+            self.scope = None
     
     def _clone_repo(self):
         """Clones a remote GitHub URL into a temporary directory."""
@@ -35,8 +41,10 @@ class GitMiner:
         for commit in Repository(self.repo_path).traverse_commits():
             for modification in commit.modified_files:
                 file_path = modification.new_path if modification.new_path else modification.old_path
-                
-                if file_path and self.ignorer.is_ignored(file_path):
+                if not file_path:
+                    continue
+
+                if self.ignorer.is_ignored(file_path):
                     continue
                 
                 data.append({
@@ -47,7 +55,14 @@ class GitMiner:
                     'commit_hash': commit.hash
                 })
         
-        return pd.DataFrame(data).dropna(subset=['file'])
+        df = pd.DataFrame(data).dropna(subset=['file'])
+    
+        if self.scope:
+            scope_prefix = f"{self.scope}/"
+            scoped_df = df[(df['file'] == self.scope) | (df['file'].str.startswith(scope_prefix))]
+            return scoped_df
+
+        return df
     
     def mine_commit_history(self) -> pd.DataFrame:
         """The main method to run cloning and extraction."""
