@@ -59,6 +59,7 @@ class GitMiner:
                     {
                         "file": file_path,
                         "author": commit.author.email,
+                        "date": commit.author_date,
                         "lines_added": modification.added_lines,
                         "lines_deleted": modification.deleted_lines,
                         "commit_hash": commit.hash,

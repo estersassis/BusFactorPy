@@ -83,6 +83,7 @@ Display version:
 busfactorpy version
 ```
 
+### Static Analysis (Current State)
 Analyze a local repository with terminal summary:
 ```bash
 busfactorpy analyze . --format summary --top-n 10
@@ -98,6 +99,20 @@ Export CSV:
 busfactorpy analyze . -f csv
 ```
 
+### Trend Analysis (Evolution Over Time)
+
+Analyze the evolution of the Bus Factor using a sliding window approach. This generates a trend summary table and a line chart (bus_factor_trend.png).
+
+Basic Trend Analysis (Last 180 days window, step of 30 days):
+```bash
+busfactorpy analyze . --trend --window 180 --step 30
+```
+
+Filter by specific date range:
+```bash
+busfactorpy analyze . --trend --since 2023-01-01 --until 2023-12-31
+```
+
 Main parameters:
 - `repository` (positional): local path or URL of the Git repository to analyze.
 - `--format, -f`: `summary` (default), `csv` or `json`.
@@ -109,6 +124,14 @@ Main parameters:
 - `--scope`: limit analysis to a subdirectory (path relative to repo root).
 - `--ignore-file`: path to an ignore file (gitignore-style) used to exclude files and directories from analysis (default: `.busfactorignore`).
 
+Trend Analysis Parameters:
+
+- `trend`: enable trend analysis mode.
+- `since`: start date for analysis (Format: YYYY-MM-DD).
+- `until`: end date for analysis (Format: YYYY-MM-DD).
+- `window`: sliding window size in days (default: 180).
+- `step`: step size in days for moving the window (default: 30).
+
 ## Outputs and Generated Artifacts
 
 - Reports:
@@ -116,6 +139,7 @@ Main parameters:
   - `reports/busfactorpy_report.json` (when `-f json`)
 - Visualization:
   - `charts/top_risky_files.png` (bar chart with Top N files by author dominance)
+  - `charts/bus_factor_trend.png` (line chart showing risk evolution over time when --trend is used)
 - Terminal summary when `--format summary`
 
 ## Local Development

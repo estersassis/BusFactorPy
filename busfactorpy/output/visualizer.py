@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from rich.console import Console
 import os
 
 
@@ -11,6 +12,7 @@ class BusFactorVisualizer:
     def __init__(self):
         self.output_dir = "charts"
         os.makedirs(self.output_dir, exist_ok=True)
+        self.console = Console()
 
     def generate_top_n_bar_chart(
         self,
@@ -28,7 +30,7 @@ class BusFactorVisualizer:
         )
 
         if risky_files.empty:
-            print("Nenhum dado para visualização.")
+            self.console.print("[yellow]Insufficient data to plot trend.[/yellow]")
             return
 
         fig, ax = plt.subplots(figsize=(10, 6))
@@ -52,4 +54,31 @@ class BusFactorVisualizer:
         plt.savefig(filepath)
         plt.close(fig)
 
-        print(f"Gráfico de barras salvo em: {filepath}")
+        self.console.print(f"[bold green]Bar chart saved to:[/bold green] {filepath}")
+
+    def plot_trend(self, trend_df: pd.DataFrame, filename="bus_factor_trend.png"):
+        if trend_df.empty:
+            self.console.print("[yellow]Insufficient data to plot trend.[/yellow]")
+            return
+
+        plt.figure(figsize=(12, 6))
+        
+        ax = plt.gca()
+        lines = ax.plot(trend_df['date'], trend_df['risky_percentage'], 
+                         color='tab:red', marker='o', label='% Risky Files')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('% Risky Files', color='tab:red')
+        ax.tick_params(axis='y', labelcolor='tab:red')
+        ax.set_ylim(0, 105) 
+        
+        plt.title('Bus Factor Evolution Over Time')
+        plt.grid(True, alpha=0.3)
+        
+        labels = [l.get_label() for l in lines]
+        ax.legend(lines, labels, loc='upper left')
+        plt.tight_layout()
+
+        filepath = os.path.join(self.output_dir, filename)
+        plt.savefig(filepath)
+
+        self.console.print(f"[bold green]Trend chart saved to:[/bold green] {filepath}")
