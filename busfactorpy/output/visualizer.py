@@ -62,20 +62,24 @@ class BusFactorVisualizer:
             return
 
         plt.figure(figsize=(12, 6))
-        
+
         ax = plt.gca()
-        lines = ax.plot(trend_df['date'], trend_df['risky_percentage'], 
-                         color='tab:red', marker='o', label='% Risky Files')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('% Risky Files', color='tab:red')
-        ax.tick_params(axis='y', labelcolor='tab:red')
-        ax.set_ylim(0, 105) 
-        
-        plt.title('Bus Factor Evolution Over Time')
+        lines = ax.plot(
+            trend_df["date"],
+            trend_df["risky_percentage"],
+            color="tab:red",
+            marker="o",
+            label="% Risky Files",
+        )
+        ax.set_xlabel("Date")
+        ax.set_ylabel("% Risky Files", color="tab:red")
+        ax.tick_params(axis="y", labelcolor="tab:red")
+        ax.set_ylim(0, 105)
+
+        plt.title("Bus Factor Evolution Over Time")
         plt.grid(True, alpha=0.3)
-        
-        labels = [line.get_label() for line in lines]
-        ax.legend(lines, labels, loc='upper left')
+
+        ax.legend(loc="upper left")
         plt.tight_layout()
 
         filepath = os.path.join(self.output_dir, filename)

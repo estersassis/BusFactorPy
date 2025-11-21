@@ -78,7 +78,8 @@ def analyze(
         False, "--trend", help="Enable trend analysis mode (evolution over time)."
     ),
     since: Optional[str] = typer.Option(
-        None, help="Start date for analysis (YYYY-MM-DD). Defaults to beginning of repo or window calc."
+        None,
+        help="Start date for analysis (YYYY-MM-DD). Defaults to beginning of repo or window calc.",
     ),
     until: Optional[str] = typer.Option(
         None, help="End date for analysis (YYYY-MM-DD). Defaults to today."
@@ -102,14 +103,18 @@ def analyze(
         try:
             start_dt = datetime.strptime(since, "%Y-%m-%d")
         except ValueError:
-            console.print("[bold red]Invalid date format for --since. Use YYYY-MM-DD.[/bold red]")
+            console.print(
+                "[bold red]Invalid date format for --since. Use YYYY-MM-DD.[/bold red]"
+            )
             raise typer.Exit(code=1)
-            
+
     if until:
         try:
             end_dt = datetime.strptime(until, "%Y-%m-%d")
         except ValueError:
-            console.print("[bold red]Invalid date format for --until. Use YYYY-MM-DD.[/bold red]")
+            console.print(
+                "[bold red]Invalid date format for --until. Use YYYY-MM-DD.[/bold red]"
+            )
             raise typer.Exit(code=1)
 
     if not (0.0 < threshold <= 1.0):
@@ -151,18 +156,20 @@ def analyze(
         raise typer.Exit(code=1)
 
     try:
-        miner = GitMiner(repository, ignorer, scope) 
-        commit_data = miner.mine_commit_history() 
-        
-        if 'date' not in commit_data.columns:
+        miner = GitMiner(repository, ignorer, scope)
+        commit_data = miner.mine_commit_history()
+
+        if "date" not in commit_data.columns:
             if trend:
                 console.print("\n[bold red]ERROR: Commit dates are missing![/bold red]")
-                console.print("[yellow]The current GitMiner implementation does not extract commit dates.[/yellow]")
+                console.print(
+                    "[yellow]The current GitMiner implementation does not extract commit dates.[/yellow]"
+                )
                 raise typer.Exit(code=1)
         else:
-            commit_data['date'] = pd.to_datetime(commit_data['date'], utc=True)
-            commit_data['date'] = commit_data['date'].dt.tz_localize(None)
-            
+            commit_data["date"] = pd.to_datetime(commit_data["date"], utc=True)
+            commit_data["date"] = commit_data["date"].dt.tz_localize(None)
+
     except Exception as e:
         console.print(f"[bold red]ERROR during mining:[/bold red] {e}")
         raise typer.Exit(code=1)
@@ -174,45 +181,46 @@ def analyze(
     if trend:
         console.print("[bold magenta]Running Trend Analysis...[/bold magenta]")
         console.print(f"Window: {window} days | Step: {step} days")
-        
+
         if not start_dt:
-            start_dt = commit_data['date'].min()
+            start_dt = commit_data["date"].min()
             console.print(f"Auto-detected start date: {start_dt.date()}")
 
         calc_params = {
             "metric": metric.lower(),
             "threshold": threshold,
             "group_by": group_by_lower,
-            "depth": depth
+            "depth": depth,
         }
 
         trend_analyzer = TrendAnalyzer(commit_data, calc_params)
         trend_df = trend_analyzer.analyze(
-            start_date=start_dt, 
-            end_date=end_dt, 
-            window_days=window, 
-            step_days=step
+            start_date=start_dt, end_date=end_dt, window_days=window, step_days=step
         )
 
         if trend_df.empty:
-            console.print("[red]Trend analysis produced no data points. Check date ranges.[/red]")
+            console.print(
+                "[red]Trend analysis produced no data points. Check date ranges.[/red]"
+            )
         else:
             console.print("\n[bold]Trend Summary:[/bold]")
             console.print(trend_df.to_string(index=False))
 
             visualizer = BusFactorVisualizer()
             visualizer.plot_trend(trend_df)
-        
+
     else:
         filtered_data = commit_data
-        if 'date' in filtered_data.columns:
+        if "date" in filtered_data.columns:
             if start_dt:
-                filtered_data = filtered_data[filtered_data['date'] >= start_dt]
+                filtered_data = filtered_data[filtered_data["date"] >= start_dt]
             if until:
-                filtered_data = filtered_data[filtered_data['date'] <= end_dt]
+                filtered_data = filtered_data[filtered_data["date"] <= end_dt]
 
         if filtered_data.empty:
-            console.print("[red]No commits found (possibly due to date filtering).[/red]")
+            console.print(
+                "[red]No commits found (possibly due to date filtering).[/red]"
+            )
             raise typer.Exit(code=0)
 
         calculator = BusFactorCalculator(
