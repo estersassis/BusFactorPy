@@ -64,7 +64,7 @@ class BusFactorVisualizer:
         plt.figure(figsize=(12, 6))
 
         ax = plt.gca()
-        lines = ax.plot(
+        ax.plot(
             trend_df["date"],
             trend_df["risky_percentage"],
             color="tab:red",
