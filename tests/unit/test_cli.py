@@ -2,6 +2,7 @@ import pandas as pd
 from typer.testing import CliRunner
 from busfactorpy.cli import app
 from datetime import datetime
+from unittest.mock import patch
 
 runner = CliRunner()
 
