@@ -1,6 +1,6 @@
 import typer
 from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 from rich.console import Console
 from busfactorpy.core.miner import GitMiner
 from busfactorpy.core.calculator import BusFactorCalculator
@@ -131,7 +131,7 @@ def analyze(
     if group_by_lower not in valid_group_by:
         console.print(
             f"[bold red]Invalid group-by:[/bold red] {group_by}. "
-            f"Valid options: file, directory"
+            "Valid options: file, directory"
         )
         raise typer.Exit(code=1)
 
@@ -172,7 +172,7 @@ def analyze(
         raise typer.Exit(code=0)
 
     if trend:
-        console.print(f"[bold magenta]Running Trend Analysis...[/bold magenta]")
+        console.print("[bold magenta]Running Trend Analysis...[/bold magenta]")
         console.print(f"Window: {window} days | Step: {step} days")
         
         if not start_dt:

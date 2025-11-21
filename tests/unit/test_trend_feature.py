@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from typer.testing import CliRunner
 from busfactorpy.cli import app
 from busfactorpy.core.trend import TrendAnalyzer

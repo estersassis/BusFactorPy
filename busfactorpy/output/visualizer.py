@@ -74,7 +74,7 @@ class BusFactorVisualizer:
         plt.title('Bus Factor Evolution Over Time')
         plt.grid(True, alpha=0.3)
         
-        labels = [l.get_label() for l in lines]
+        labels = [line.get_label() for line in lines]
         ax.legend(lines, labels, loc='upper left')
         plt.tight_layout()
 

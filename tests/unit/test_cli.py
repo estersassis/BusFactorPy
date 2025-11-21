@@ -1,16 +1,12 @@
 import pandas as pd
 from typer.testing import CliRunner
 from busfactorpy.cli import app
-import re
 from datetime import datetime
-from unittest.mock import patch, MagicMock
-from busfactorpy.core.trend import TrendAnalyzer
 
 runner = CliRunner()
 
 def normalize(s: str) -> str:
     return s.replace("\\", "/")
-
 
 def test_cli_analyze_default(monkeypatch, tmp_path):
     # DataFrame sintético simulando saída do miner
